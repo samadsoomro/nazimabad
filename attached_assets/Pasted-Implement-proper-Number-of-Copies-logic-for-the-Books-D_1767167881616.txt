@@ -1,0 +1,130 @@
+Implement proper "Number of Copies" logic for the Books Details module
+and sync it with Borrowed Books automatically.
+
+GOAL:
+- Admin sets total copies (e.g. 10)
+- Normal website shows available copies
+- When a book is borrowed → copies decrease
+- When returned → copies increase
+
+────────────────────────
+1️⃣ DATABASE STRUCTURE (Books Details)
+────────────────────────
+
+In books_details table/collection, ensure fields:
+
+- total_copies (integer, required)
+- available_copies (integer, required)
+
+RULE:
+- On book creation:
+  available_copies = total_copies
+
+Never calculate available copies on frontend.
+
+────────────────────────
+2️⃣ DISPLAY LOGIC (NORMAL WEBSITE)
+────────────────────────
+
+In Books menu (normal website):
+
+Show:
+- "Available Copies: X"
+
+X = available_copies (from DB)
+
+If available_copies === 0:
+- Disable "Borrow" button
+- Show label: "Not Available"
+
+────────────────────────
+3️⃣ BORROW ACTION LOGIC (CRITICAL)
+────────────────────────
+
+When a logged-in user clicks "Borrow":
+
+BACKEND FLOW (ATOMIC TRANSACTION):
+
+1. Validate user:
+   - Must be logged in
+   - Must have APPROVED library card
+
+2. Validate book:
+   - available_copies > 0
+   - Book exists
+
+3. Create Borrowed Books record:
+   - user_id / library_card_id
+   - book_id
+   - borrow_date = today
+   - return_date = today + 14 days
+   - status = "borrowed"
+
+4. Update Books Details:
+   - available_copies = available_copies - 1
+
+5. Return success response
+
+If any step fails:
+- Roll back changes
+- Do NOT decrement copies
+
+────────────────────────
+4️⃣ RETURN BOOK LOGIC
+────────────────────────
+
+When admin marks a book as "Returned":
+
+1. Update Borrowed Books record:
+   status = "returned"
+
+2. Update Books Details:
+   available_copies = available_copies + 1
+
+Ensure:
+- available_copies NEVER exceeds total_copies
+
+────────────────────────
+5️⃣ SAFETY & VALIDATION RULES
+────────────────────────
+
+- One user cannot borrow same book twice without returning
+- available_copies must never go below 0
+- Use backend transactions / locking
+- Reject parallel borrow attempts safely
+
+────────────────────────
+6️⃣ ADMIN DASHBOARD DISPLAY
+────────────────────────
+
+In Books Details module show:
+- Total Copies
+- Available Copies
+- Borrowed Copies (calculated)
+
+Borrowed Copies = total_copies - available_copies
+
+────────────────────────
+7️⃣ DO NOT CHANGE
+────────────────────────
+
+❌ Borrowed Books schema (except status handling)
+❌ UI layout
+❌ Existing authentication logic
+
+────────────────────────
+FINAL EXPECTED RESULT
+────────────────────────
+
+Admin sets: Total Copies = 10
+
+Normal website shows:
+- Available Copies: 10
+
+User borrows book → 
+- Available Copies: 9
+
+Book returned →
+- Available Copies: 10
+
+System remains consistent and secure.

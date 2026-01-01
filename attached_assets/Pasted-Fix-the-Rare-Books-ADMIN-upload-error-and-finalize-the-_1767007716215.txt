@@ -1,0 +1,119 @@
+Fix the Rare Books ADMIN upload error and finalize the system.
+
+CURRENT ISSUE:
+- Admin fills all fields correctly:
+  - Title
+  - Category
+  - Description
+  - Cover Image
+  - Rare Book PDF
+- Clicks "Add Rare Book"
+- After loading, system throws:
+  "file time not supported" / timeout / upload failed error
+
+This must be fixed permanently.
+
+────────────────────────
+1️⃣ ROOT CAUSE FIX (MANDATORY)
+────────────────────────
+
+Investigate and fix the upload failure caused by:
+
+- Large PDF upload timeout
+- Improper multipart/form-data handling
+- Incorrect file stream handling
+- Request body size limits
+- Server timeout limits
+- Improper async file save logic
+
+Apply fixes:
+- Increase upload size limit (PDF + image)
+- Increase request timeout safely
+- Use streaming-based file saving (no memory crash)
+- Ensure proper async/await handling
+- Validate file AFTER upload, not before stream completes
+
+Result:
+✔ No timeout
+✔ No "file time not supported" error
+✔ Works with large PDFs
+
+────────────────────────
+2️⃣ FILE TYPE SUPPORT (STRICT BUT CORRECT)
+────────────────────────
+
+Ensure Rare Books module supports:
+
+PDF:
+- application/pdf
+- Large file sizes supported
+
+Cover Image:
+- jpg
+- jpeg
+- png
+- webp
+
+Reject only truly invalid formats.
+Do NOT falsely reject valid files.
+
+────────────────────────
+3️⃣ DATABASE & FILE CONSISTENCY
+────────────────────────
+
+Ensure:
+- Database record is created ONLY after files save successfully
+- No partial uploads
+- No orphan files
+- Proper rollback on failure
+
+Fields must store:
+- title
+- category
+- description
+- cover_image path
+- pdf path
+- created_at
+
+────────────────────────
+4️⃣ DO NOT BREAK EXISTING FEATURES
+────────────────────────
+
+Strict rules:
+- Do NOT change UI
+- Do NOT change Rare Books preview logic
+- Do NOT affect Notes module
+- Do NOT affect Borrowed Books
+- Do NOT change admin authentication
+
+Only fix upload reliability.
+
+────────────────────────
+5️⃣ FINAL VERIFICATION
+────────────────────────
+
+Before completing:
+
+- Upload a large Rare Book PDF successfully
+- Confirm admin sees it listed
+- Confirm normal user can preview it
+- Confirm no download possible
+- Confirm no errors in console or server logs
+
+────────────────────────
+6️⃣ FINALIZE FOR DEPLOYMENT
+────────────────────────
+
+After fix:
+- Clean upload handling code
+- Normalize file paths
+- Ensure ZIP export works without corruption
+- Ensure project runs correctly after unzip
+
+FINAL RESULT REQUIRED:
+✔ Rare Books upload NEVER fails
+✔ Large PDFs supported
+✔ Preview already works
+✔ Security intact
+✔ Project stable
+✔ Ready to deploy

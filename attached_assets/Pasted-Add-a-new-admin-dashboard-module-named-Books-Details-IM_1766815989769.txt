@@ -1,0 +1,72 @@
+Add a new admin dashboard module named "Books Details".
+
+IMPORTANT CONTEXT:
+This website already has:
+- A working admin panel (admin-only access)
+- A working "Borrowed Books" module
+- A Books menu on the normal website where users borrow books
+- Borrow logic is already implemented and MUST NOT be changed
+
+This new module is ONLY for managing book information (NOT file uploads, NOT PDFs).
+
+────────────────────────
+BACKEND + DATABASE ONLY
+(NO frontend UI changes yet)
+────────────────────────
+
+DATABASE:
+Create a new table/collection named: books_details
+
+Fields:
+- id (auto-generated primary key)
+- book_name (string, REQUIRED, unique)
+- book_intro (short text)
+- book_description (long text)
+- book_image (image URL or file path ONLY, not a PDF)
+- created_at (timestamp)
+- updated_at (timestamp)
+
+RULES:
+- This module is for DISPLAY DATA ONLY
+- Admin will add/edit book name, image, and description
+- No book files are uploaded here
+- Book image is optional but must be jpg/png/webp if provided
+- Prevent duplicate book_name entries
+
+────────────────────────
+ADMIN-ONLY API ENDPOINTS
+────────────────────────
+
+Create secure admin-authenticated endpoints:
+
+1. Add Book Details
+2. Edit Book Details
+3. Delete Book Details
+4. Fetch All Book Details
+
+SECURITY:
+- Only admin can access these endpoints
+- Use existing admin authentication middleware
+- Reject non-admin requests
+
+────────────────────────
+SYSTEM INTEGRATION RULES
+────────────────────────
+
+- DO NOT modify existing Borrowed Books logic
+- DO NOT break current login, admin dashboard, or database
+- DO NOT create borrow logic here
+- Borrow button will remain handled by the existing Borrowed Books module
+- This module ONLY supplies book information to be shown on the normal website later
+
+────────────────────────
+FINAL CHECK
+────────────────────────
+
+After completion:
+- APIs must work correctly
+- Database operations must succeed
+- No errors in server logs
+- No impact on existing modules
+
+DO NOT add frontend UI yet.

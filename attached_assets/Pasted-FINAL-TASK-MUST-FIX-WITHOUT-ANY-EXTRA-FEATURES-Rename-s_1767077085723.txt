@@ -1,0 +1,135 @@
+FINAL TASK — MUST FIX WITHOUT ANY EXTRA FEATURES
+
+Rename & standardize the module as follows:
+
+ADMIN DASHBOARD MODULE NAME:
+➡️ "Books"
+
+This module is ONLY for normal books shown on the website Books menu.
+THIS IS NOT Rare Books.
+THIS IS NOT Notes.
+THIS IS NOT PDF upload.
+
+────────────────────────
+ADMIN BOOKS MODULE (STRICT)
+────────────────────────
+
+Admin form fields (ONLY these):
+
+- book_name (required)
+- short_intro (required)
+- description (required)
+- book_image (IMAGE ONLY)
+- add_book button
+
+REMOVE:
+- category selection
+- PDF upload
+- any unused fields
+
+Image rules:
+- Allowed formats: jpg, jpeg, png, webp
+- Large image sizes must be supported
+- Store image safely (no crashes)
+
+────────────────────────
+DATABASE RULES
+────────────────────────
+
+Table / Collection: books
+
+Fields:
+- id
+- book_name
+- short_intro
+- description
+- book_image
+- created_at
+
+Ensure:
+- Book is saved successfully
+- No silent failures
+- No duplicate breaking
+
+────────────────────────
+BACKEND API (MANDATORY)
+────────────────────────
+
+Create / ensure public API endpoint:
+
+GET /api/books
+
+This endpoint MUST:
+- Return ALL books from database
+- Sort by created_at DESC (latest first)
+- Be accessible to normal users
+
+Admin endpoints:
+- Add book
+- Edit book
+- Delete book
+
+DO NOT touch Borrowed Books logic.
+
+────────────────────────
+NORMAL WEBSITE — BOOKS MENU (CRITICAL FIX)
+────────────────────────
+
+The Books menu MUST:
+
+- Fetch books ONLY from /api/books
+- NOT use static data
+- NOT use Borrowed Books table
+- NOT depend on admin role
+
+Each book card shows:
+- Book image
+- Book name
+- Short intro
+- "Borrow" button
+
+Layout:
+- Desktop: 4 books per row
+- Mobile: 1 book per row
+
+Order:
+- Latest uploaded book appears FIRST
+
+────────────────────────
+BORROW FLOW (DO NOT CHANGE)
+────────────────────────
+
+When user clicks "Borrow":
+- Existing Borrowed Books system handles it
+- Admin receives request in Borrowed Books module
+- User email stored (already implemented)
+
+DO NOT rework borrow logic.
+ONLY connect Books → Borrow button.
+
+────────────────────────
+STRICT RULES
+────────────────────────
+
+❌ NO PDF upload in Books module
+❌ NO Rare Books logic
+❌ NO redesign
+❌ NO dummy/static data
+❌ NO removing old working features
+
+────────────────────────
+FINAL ACCEPTANCE CHECK (MANDATORY)
+────────────────────────
+
+✔ Admin adds book → saved in DB
+✔ Book appears instantly in website Books menu
+✔ Latest book on top
+✔ Image visible
+✔ Borrow button works
+✔ Borrow request visible in Admin Borrowed Books
+✔ No console errors
+✔ No blank pages
+
+THIS IS A DATA CONNECTION FIX.
+IMPLEMENT EXACTLY AS SPECIFIED.
+DO NOT ADD EXTRA FEATURES.

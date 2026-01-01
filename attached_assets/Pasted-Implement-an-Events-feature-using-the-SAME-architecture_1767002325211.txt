@@ -1,0 +1,94 @@
+Implement an Events feature using the SAME architecture, patterns, and components already used in:
+
+- Notes module
+- Rare Books module
+- Books Details module
+
+⚠️ Do NOT propose mode switching.
+⚠️ Do NOT redesign UI.
+⚠️ Do NOT refactor core architecture.
+⚠️ Do NOT introduce new frameworks.
+
+This is a SIMPLE CRUD module following existing code patterns.
+
+────────────────────────
+ADMIN DASHBOARD — EVENTS MODULE
+────────────────────────
+
+Add a new admin module named "Events".
+
+Reuse:
+- Existing admin table component
+- Existing upload logic
+- Existing form patterns
+
+Fields:
+- id (auto)
+- title (string, required)
+- description (textarea, required)
+- images (array of image paths)
+- created_at
+- updated_at
+
+Image upload:
+- jpg / png / webp only
+- Multiple images allowed
+- Reuse existing upload middleware
+- No optimization pipeline required (reuse current one)
+
+Admin actions:
+- Add event
+- Edit event
+- Delete event
+- View list
+
+────────────────────────
+NORMAL WEBSITE — EVENTS PAGE
+────────────────────────
+
+Create a new page: /events
+
+Behavior:
+- Fetch events from backend API
+- Show newest first
+- Display:
+  - Title
+  - Image gallery (reuse existing gallery/slider if available, otherwise simple list)
+  - Full paragraph description
+
+No pagination required.
+No download required.
+
+────────────────────────
+HOME PAGE BUTTON
+────────────────────────
+
+Add ONE button on Home page:
+Label: "Events"
+
+Placement:
+Between existing buttons:
+"Explore Books" and "Get Started"
+
+Redirect:
+→ /events
+
+────────────────────────
+RULES
+────────────────────────
+
+- Use existing backend structure
+- Use existing auth middleware (admin-only)
+- No breaking changes
+- No UI redesign
+- No new permissions system
+- Keep code minimal
+
+────────────────────────
+DELIVERABLE EXPECTATION
+────────────────────────
+
+This is NOT a large system.
+This is a standard CRUD module similar to Notes.
+
+Proceed with implementation directly.

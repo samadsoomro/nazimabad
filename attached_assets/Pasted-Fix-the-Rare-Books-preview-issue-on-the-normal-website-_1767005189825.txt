@@ -1,0 +1,96 @@
+Fix the Rare Books preview issue on the normal website and finalize the project for deployment.
+
+CURRENT PROBLEM:
+- Admin uploads Rare Book PDF successfully
+- Rare Book appears in normal website menu
+- When a normal user clicks "View / Preview", the PDF does NOT render
+- Download is already disabled (correct)
+- Screenshot protection already applied (correct)
+
+PRIMARY OBJECTIVE:
+Make Rare Books PREVIEW WORK RELIABLY for users while keeping strict security.
+
+────────────────────────
+1️⃣ FIX RARE BOOK PREVIEW (CRITICAL)
+────────────────────────
+
+Ensure Rare Books PDF preview works correctly:
+
+- Use a stable embedded PDF viewer (iframe or secure PDF viewer)
+- Ensure correct file path / stream is passed to the viewer
+- Handle large PDF files safely (no blank screen)
+- Ensure backend sends proper headers for inline viewing
+
+If PDF streaming fails:
+- Fallback to buffered stream response
+- Ensure no direct file URL is exposed
+
+Result:
+✔ User can VIEW the PDF
+✔ No download option
+✔ No blank page
+✔ Works for large PDFs
+
+────────────────────────
+2️⃣ SECURITY (KEEP + VERIFY)
+────────────────────────
+
+Apply ONLY to Rare Books (do NOT affect Notes):
+
+- Disable right-click
+- Disable text selection
+- Disable Ctrl+S, Ctrl+P, Ctrl+Shift+I
+- Prevent direct PDF URL access
+- Ensure preview is embedded only
+
+Do NOT loosen security.
+
+────────────────────────
+3️⃣ ADMIN SIDE CHECK
+────────────────────────
+
+- Ensure Rare Book upload remains stable
+- Ensure uploaded PDF + cover_image mapping is correct
+- Ensure database records are intact
+- No UI redesign
+
+────────────────────────
+4️⃣ OPTIMIZE & STABILIZE PROJECT
+────────────────────────
+
+Prepare project for deployment:
+
+- Clean unused imports and files
+- Ensure file paths are consistent
+- Normalize uploads directory structure
+- Ensure environment variables are correct
+- Confirm no hardcoded local paths
+- Ensure no corrupted assets
+
+────────────────────────
+5️⃣ FINAL ZIP EXPORT
+────────────────────────
+
+Before finishing:
+
+- Verify entire site works:
+  - Admin login
+  - Rare Books upload
+  - Rare Books preview
+  - Notes
+  - Events
+  - Books
+  - Library Card
+
+Then:
+
+- Package ALL source files into a clean ZIP
+- Ensure ZIP extracts without corruption
+- Ensure project runs correctly after extraction
+
+FINAL RESULT REQUIRED:
+✔ Rare Books preview works for users
+✔ Security intact (view-only)
+✔ No blank screens
+✔ Project optimized
+✔ ZIP ready for GitHub / deployment

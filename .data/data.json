@@ -1,0 +1,63 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "username": "admin",
+      "password": "password",
+      "isAdmin": true,
+      "fullName": "System Admin",
+      "email": "admin@gcmn.edu.pk",
+      "type": "admin"
+    }
+  ],
+  "profiles": [],
+  "contactMessages": [],
+  "bookBorrows": [],
+  "libraryCardApplications": [
+    {
+      "id": "d1167777a4d1feed",
+      "userId": null,
+      "firstName": "Abdul",
+      "lastName": "Samad",
+      "fatherName": "MUNIR AHMED SOOMRO",
+      "dob": "2007-11-03",
+      "email": "samad.tab1@gmail.com",
+      "phone": "03322247950",
+      "field": "Computer Science",
+      "rollNo": "E-09",
+      "class": "Class 12",
+      "addressStreet": "House No.A-5, Secter 11-B, North Karachi",
+      "addressCity": "Karachi",
+      "addressState": "Sindh",
+      "addressZip": "75850",
+      "status": "approved",
+      "cardNumber": "CS-E-09-12",
+      "studentId": "GCMN-587523",
+      "issueDate": "2025-12-31",
+      "validThrough": "2026-12-31",
+      "createdAt": "2025-12-31T07:51:49.024Z",
+      "updatedAt": "2026-01-01T11:11:32.993Z"
+    }
+  ],
+  "donations": [],
+  "userRoles": [],
+  "notes": [],
+  "rareBooks": [],
+  "booksDetails": [],
+  "events": [],
+  "books": [],
+  "students": [
+    {
+      "id": "b9ba9bae6bde4dae",
+      "userId": "card-d1167777a4d1feed",
+      "cardId": "CS-E-09-12",
+      "name": "Abdul Samad",
+      "class": "Class 12",
+      "field": "Computer Science",
+      "rollNo": "E-09",
+      "email": "samad.tab1@gmail.com",
+      "phone": "03322247950",
+      "createdAt": "2026-01-01T11:11:32.993Z"
+    }
+  ]
+}

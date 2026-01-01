@@ -1,0 +1,85 @@
+Fix the Rare Books module preview issue on BOTH Admin Dashboard and Normal Website.
+
+IMPORTANT RULE (NO EXCEPTIONS):
+PDF first-page rendering is UNRELIABLE.
+Therefore:
+
+🚫 DO NOT attempt to extract or render the first page of PDF as an image.
+✅ ALWAYS require a separate cover image for every Rare Book.
+
+This rule is MANDATORY.
+
+────────────────────────
+REQUIRED CHANGES
+────────────────────────
+
+1️⃣ MANDATORY COVER IMAGE (ALWAYS)
+
+- Add a REQUIRED field: cover_image in Rare Books
+- Admin must upload:
+  - Rare Book PDF
+  - Cover Image (jpg / png / webp) → REQUIRED, cannot submit without it
+- Store cover_image path securely
+- Use cover_image as:
+  - Book thumbnail
+  - Book front image
+  - Preview image in Rare Books list
+  - Preview image before clicking "View"
+
+⚠️ No fallback
+⚠️ No PDF page extraction
+⚠️ No auto-generated thumbnails
+
+────────────────────────
+2️⃣ FIX "VIEW ONLY" PDF PREVIEW (MUST WORK)
+
+When user clicks "View":
+- Open embedded PDF viewer (iframe or PDF viewer component)
+- Ensure:
+  - Correct file path
+  - Correct response headers (Content-Type: application/pdf)
+  - Proper streaming (no blank screen)
+
+Viewer must:
+- Render PDF pages properly
+- Load immediately
+- Never show a blank page
+
+────────────────────────
+3️⃣ STRICT SECURITY — APPLY ONLY TO RARE BOOKS
+
+- Disable PDF download
+- Disable right-click
+- Disable text selection
+- Disable keyboard shortcuts:
+  Ctrl+S
+  Ctrl+P
+  Ctrl+Shift+I
+- Do NOT expose direct PDF URLs
+- Serve PDF via protected backend stream endpoint
+
+⚠️ Notes module must remain unchanged
+
+────────────────────────
+4️⃣ STABILITY & SAFETY
+
+- Add try/catch for:
+  - Upload
+  - Fetch
+  - Render
+- If PDF fails:
+  - Show user-friendly error
+  - Do NOT crash page
+- Log errors server-side (admin-only)
+
+────────────────────────
+FINAL ACCEPTANCE CRITERIA
+────────────────────────
+
+✔ Cover image is ALWAYS required
+✔ Rare Books page never blank
+✔ PDF preview always visible
+✔ No downloads possible
+✔ No UI redesign
+✔ No data loss
+✔ Fast performance

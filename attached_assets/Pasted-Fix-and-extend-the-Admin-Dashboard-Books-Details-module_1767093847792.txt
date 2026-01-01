@@ -1,0 +1,111 @@
+Fix and extend the Admin Dashboard "Books Details" module.
+
+CURRENT STATUS:
+- Book details upload works
+- Book appears in normal website Books menu
+- BUT uploaded book image is NOT displaying
+- Borrowed Books module already exists and works
+
+This task must NOT break any existing feature.
+
+────────────────────────
+1️⃣ FIX BOOK IMAGE DISPLAY (CRITICAL)
+────────────────────────
+
+Problem:
+- Book cover image uploaded in Admin → Books Details
+- Image path is saved
+- Image does NOT render on normal website Books menu
+
+Fix:
+- Ensure correct image storage path
+- Ensure public access to uploaded images
+- Fix frontend image src binding
+- Add fallback image if missing
+
+Rules:
+- Do NOT change UI layout
+- Do NOT re-upload existing data
+- Must work for jpg, jpeg, png, webp
+
+Result:
+✔ Book cover image displays correctly everywhere
+
+────────────────────────
+2️⃣ EXTEND BOOKS DETAILS MODULE (ADMIN)
+────────────────────────
+
+Add the following fields to Books Details:
+
+- total_copies (number, required)
+- available_copies (auto-calculated)
+- created_at
+- updated_at
+
+Logic:
+- available_copies = total_copies - active borrowed count
+- Prevent borrowing if available_copies = 0
+
+────────────────────────
+3️⃣ BORROW TRACKING IN BOOK DETAILS
+────────────────────────
+
+Link Books Details with Borrowed Books module.
+
+For each book, show (Admin only):
+- List of students who borrowed this book
+- Fetch details from Borrowed Books module:
+  - Student name
+  - Email
+  - Phone number
+  (from Library Card / Registered user data)
+- Borrow date
+- Auto return date = borrow_date + 14 days
+
+No duplicate data storage.
+
+────────────────────────
+4️⃣ ADMIN ACTIONS
+────────────────────────
+
+Add Admin actions per borrowed record:
+- Delete / Mark as Returned
+
+On borrow action:
+Show popup message:
+"You have borrowed the book: <BOOK NAME>.
+Please visit the library and return it within 14 days.
+We may contact you via phone or email if required."
+
+────────────────────────
+5️⃣ AUTOMATION RULES
+────────────────────────
+
+- Borrow allowed ONLY if user is logged in
+- Borrow allowed ONLY if available_copies > 0
+- Return date auto-calculated (14 days)
+- No manual return date editing
+
+────────────────────────
+6️⃣ SAFETY & STABILITY
+────────────────────────
+
+Rules:
+- Do NOT modify Borrowed Books logic structure
+- Do NOT redesign UI
+- Do NOT expose admin-only data to users
+- Do NOT break Notes, Rare Books, Events
+
+Ensure:
+✔ No blank pages
+✔ No console errors
+✔ Fast response
+✔ Existing data preserved
+
+────────────────────────
+FINAL VERIFICATION:
+✔ Book image displays on website
+✔ Copies logic works correctly
+✔ Borrow details visible in admin
+✔ Popup confirmation works
+✔ System ready for deployment & ZIP export

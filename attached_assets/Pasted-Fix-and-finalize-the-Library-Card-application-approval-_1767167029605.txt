@@ -1,0 +1,102 @@
+Fix and finalize the Library Card application approval system.
+
+CURRENT PROBLEM:
+- Library card applications appear in Admin Dashboard → Library Cards module
+- Status button (Pending / Approve – green) exists
+- Clicking Approve does NOT properly activate the card for login
+- Status logic is unreliable
+
+REQUIRED BEHAVIOR:
+────────────────────────
+
+1️⃣ LIBRARY CARD STATUS SYSTEM
+────────────────────────
+
+Each library card application must have a clear status:
+
+- "pending"  → default (new applications)
+- "approved" → allowed to login
+- "rejected" (optional, future-safe)
+
+Store status in database (NOT UI-only).
+
+────────────────────────
+2️⃣ ADMIN APPROVAL ACTION (FIX)
+────────────────────────
+
+When admin clicks the GREEN "Approve" button:
+
+- Instantly update database:
+  status = "approved"
+
+- Generate / activate:
+  - Library Card ID (if not already generated)
+  - Login eligibility
+
+- Disable Approve button after approval
+- Change status badge from:
+  PENDING → APPROVED (green)
+
+No page reload crash
+No duplicate approvals
+
+────────────────────────
+3️⃣ LOGIN RULES (CRITICAL)
+────────────────────────
+
+Library Card holders can log in ONLY if:
+- status === "approved"
+
+If status is "pending":
+- Block login
+- Show message:
+  "Your library card application is under review."
+
+If status is "rejected":
+- Block login
+- Show message:
+  "Your library card application was rejected."
+
+────────────────────────
+4️⃣ DATA CONSISTENCY
+────────────────────────
+
+Once approved:
+- User details must be reusable across system:
+  - Borrowed Books module
+  - Book requests
+  - Notifications (future)
+
+DO NOT duplicate user records.
+Use library_card_id as primary reference.
+
+────────────────────────
+5️⃣ SECURITY RULES
+────────────────────────
+
+- Only Admin can approve/reject
+- No user-side status manipulation
+- Validate request on backend
+- Prevent approving same card twice
+
+────────────────────────
+6️⃣ OPTIONAL BUT RECOMMENDED
+────────────────────────
+
+After approval:
+- Show popup:
+  "Library Card Approved Successfully"
+
+Optional future hook:
+- Email notification (do not implement now)
+
+────────────────────────
+FINAL CHECKLIST
+────────────────────────
+
+✔ Pending → Approved works
+✔ Approved users can login
+✔ Pending users cannot login
+✔ Status stored correctly in DB
+✔ Admin UI reflects real status
+✔ No existing data is lost

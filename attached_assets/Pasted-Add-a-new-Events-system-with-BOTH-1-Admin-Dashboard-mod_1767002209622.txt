@@ -1,0 +1,90 @@
+Add a new Events system with BOTH:
+1) Admin Dashboard module: "Events"
+2) Normal Website page: "Events"
+
+This must be EASY TO EDIT from admin and automatically reflect on the website.
+
+────────────────────────
+ADMIN DASHBOARD — EVENTS MODULE
+────────────────────────
+
+Create a new admin-only module named "Events".
+
+Admin capabilities:
+- Add new event
+- Edit existing event
+- Delete event
+- View all events in a table
+
+Event Fields:
+- id (auto)
+- event_title (string, required)
+- event_description (long paragraph text, required)
+- event_images (multiple images allowed)
+- event_date (optional)
+- created_at
+- updated_at
+
+Image rules:
+- Allow jpg / png / webp only
+- Support multiple image uploads per event
+- Optimize images for fast loading
+- Store image paths securely
+
+Security:
+- Only admin can access this module
+- Add proper validation and error handling
+- No page crashes on large image uploads
+
+────────────────────────
+NORMAL WEBSITE — EVENTS PAGE
+────────────────────────
+
+Add a new menu item: "Events"
+
+Events page behavior:
+- Display latest events first
+- Each event shows:
+  - Title
+  - Images (gallery or slider)
+  - Full paragraph description
+  - Event date (if provided)
+- Clean, readable layout
+- Fully dynamic (no hardcoded content)
+
+No download options required.
+
+────────────────────────
+HOME PAGE CHANGE
+────────────────────────
+
+On the Home page:
+- Add a new button labeled "Events"
+- Place this button BETWEEN:
+  "Explore Books" and "Get Started"
+
+Button behavior:
+- Redirect to Events page
+- Visible to all users (admin + normal users)
+
+────────────────────────
+RULES & CONSTRAINTS
+────────────────────────
+
+- Do NOT redesign existing UI
+- Follow current theme and styling
+- Do NOT break any existing features
+- Events must be editable ONLY from admin
+- Changes must reflect immediately on website
+- Ensure fast load time and smooth scrolling
+
+────────────────────────
+FINAL CHECK
+────────────────────────
+
+✔ Admin can manage events easily
+✔ Website Events page always renders
+✔ Home page button works correctly
+✔ Images load fast
+✔ No console or runtime errors
+✔ Production-ready and stable

@@ -1,0 +1,101 @@
+Fix the Admin Dashboard → Events module error that occurs when submitting an event WITH image upload.
+
+CURRENT BUG:
+- Event Title entered ✔
+- Event Date entered ✔
+- Event Description entered ✔
+- Image selected ✔
+- Click "Add Event" ❌ ERROR occurs
+- Event is NOT saved
+
+This happens ONLY when an image is included.
+
+────────────────────────
+ROOT CAUSE TO FIX
+────────────────────────
+
+The issue is improper handling of multipart/form-data.
+
+Text fields + file upload are NOT being parsed correctly together.
+
+────────────────────────
+REQUIRED TECHNICAL FIXES
+────────────────────────
+
+1️⃣ MULTIPART FORM HANDLING (MANDATORY)
+
+- Ensure the Events create endpoint accepts:
+  - multipart/form-data
+- Use the SAME upload middleware pattern used in:
+  - Notes module OR
+  - Rare Books module (whichever already works)
+
+- Confirm:
+  - req.body contains:
+    event_title
+    event_date
+    event_description
+  - req.file or req.files contains image(s)
+
+Do NOT expect JSON when file is present.
+
+────────────────────────
+2️⃣ IMAGE FIELD CONFIGURATION
+
+- Ensure field name used in frontend EXACTLY matches backend:
+  Example:
+  input name="event_images"
+
+- Backend must handle:
+  - single image
+  - OR multiple images (array-safe)
+
+Avoid undefined file errors.
+
+────────────────────────
+3️⃣ FILE VALIDATION (NO FAIL)
+
+Accept:
+- image/jpeg
+- image/jpg
+- image/png
+- image/webp
+
+Reject others with clear error message.
+
+────────────────────────
+4️⃣ SAVE LOGIC FIX
+
+- Save text fields FIRST
+- Then process image(s)
+- Store image paths correctly
+- Do NOT crash if image array length = 1
+
+────────────────────────
+5️⃣ ERROR HANDLING
+
+- Wrap full controller in try/catch
+- If upload fails:
+  - Return admin-friendly message
+  - Do NOT throw unhandled exception
+
+────────────────────────
+DO NOT CHANGE
+────────────────────────
+
+- No UI changes
+- No schema changes
+- No routing changes
+- No redesign
+- No effect on other modules
+
+────────────────────────
+FINAL TEST
+────────────────────────
+
+✔ Add event WITHOUT image → works
+✔ Add event WITH image → works
+✔ Event saved in DB
+✔ Image displays on Events page
+✔ No server error
+✔ No blank screen

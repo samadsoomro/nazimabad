@@ -1,0 +1,96 @@
+Update the Admin Dashboard → Borrowed Books module to display correct borrower details
+and auto-calculated return dates.
+
+CURRENT STATUS:
+- Borrow action works
+- Borrowed Books records are created
+- Data exists but columns are not in required format
+
+REQUIRED CHANGES:
+────────────────────────
+
+1️⃣ BORROWED BOOKS TABLE STRUCTURE (ADMIN VIEW)
+
+Remove the following columns completely:
+- ISBN
+- Any unused / irrelevant columns
+
+Add and display ONLY these columns in this exact order:
+
+1. Serial No (auto incremental, UI only)
+2. Borrower Name
+3. Phone Number
+4. Email Address
+5. Book Name
+6. Borrow Date
+7. Return Date (auto)
+8. Action
+
+────────────────────────
+2️⃣ BORROWER DATA SOURCE (IMPORTANT)
+────────────────────────
+
+Borrower details must be auto-filled based on login type:
+
+Case 1: Library Card Login
+- Fetch from Library Card records:
+  - Name
+  - Phone number
+  - Email
+
+Case 2: Staff / Visitor Login
+- Fetch from Registration records:
+  - Name
+  - Phone number
+  - Email
+
+❌ Do NOT ask user to re-enter details
+❌ Do NOT duplicate data unnecessarily
+
+────────────────────────
+3️⃣ DATE LOGIC (MANDATORY)
+────────────────────────
+
+- Borrow Date:
+  - Auto-set when user clicks "Borrow"
+
+- Return Date:
+  - Auto-calculate as:
+    Borrow Date + 14 days
+  - Store in database
+  - Display clearly in admin table
+
+No manual date input allowed.
+
+────────────────────────
+4️⃣ ACTION COLUMN
+────────────────────────
+
+Actions allowed:
+- Delete / Mark as Returned
+
+Optional:
+- Confirmation popup before delete
+
+No other actions required.
+
+────────────────────────
+5️⃣ RULES & SAFETY
+────────────────────────
+
+- Do NOT modify borrow flow
+- Do NOT change Books Details module
+- Do NOT affect normal website UI
+- Do NOT break existing borrow records
+- Ensure backward compatibility
+
+────────────────────────
+FINAL VERIFICATION
+────────────────────────
+
+✔ Borrow click creates correct record
+✔ Name / phone / email auto-filled
+✔ Return date is exactly 14 days later
+✔ ISBN column removed
+✔ Serial number displayed correctly
+✔ Admin dashboard remains fast & stable
