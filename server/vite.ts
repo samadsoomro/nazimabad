@@ -2,13 +2,10 @@ import express, { type Express } from "express";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { createServer as createViteServer, createLogger } from "vite";
 import type { Server } from "http";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-const viteLogger = createLogger();
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
@@ -22,6 +19,10 @@ export function log(message: string, source = "express") {
 }
 
 export async function setupVite(app: Express, server: Server) {
+  const viteModule = await import("vi" + "te");
+  const { createServer: createViteServer, createLogger } = viteModule;
+  const viteLogger = createLogger();
+
   const vite = await createViteServer({
     configFile: path.resolve(__dirname, "..", "vite.config.ts"),
     server: {
@@ -31,14 +32,14 @@ export async function setupVite(app: Express, server: Server) {
     appType: "custom",
     customLogger: {
       ...viteLogger,
-      error: (msg, options) => {
+      error: (msg: string, options: any) => {
         viteLogger.error(msg, options);
       },
     },
   });
 
   app.use(vite.middlewares);
-  app.use("/{*splat}", async (req, res, next) => {
+  app.use("/{*splat}", async (req: any, res: any, next: any) => {
     const url = req.originalUrl;
 
     try {
