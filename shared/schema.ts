@@ -66,6 +66,7 @@ export const libraryCardApplications = pgTable("library_card_applications", {
   addressZip: text("address_zip").notNull(),
   status: text("status").default("pending").notNull(),
   cardNumber: text("card_number").unique(),
+  password: text("password"),
   studentId: text("student_id"),
   issueDate: date("issue_date"),
   validThrough: date("valid_through"),
@@ -160,6 +161,7 @@ export type InsertNonStudent = z.infer<typeof insertNonStudentSchema>;
 export type InsertUserRole = z.infer<typeof insertUserRoleSchema>;
 export type InsertBookDetail = z.infer<typeof insertBookDetailSchema>;
 export type InsertRareBook = z.infer<typeof insertRareBookSchema>;
+export type RareBook = typeof rareBooks.$inferSelect;
 
 export type User = typeof users.$inferSelect;
 export type Profile = typeof profiles.$inferSelect;

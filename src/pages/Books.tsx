@@ -175,12 +175,13 @@ const Books = () => {
                         book_id: book.id,
                         title: book.bookName,
                         author: '',
+                        publication_year: 0,
                         category: '',
                         description: book.description,
                         cover_image: book.bookImage,
-                        image: book.bookImage,
+
                         isbn: '',
-                        available: parseInt(book.availableCopies || "0") > 0,
+
                         status: parseInt(book.availableCopies || "0") > 0 ? 'available' : 'unavailable',
                         total_copies: parseInt(book.totalCopies || "0"),
                         available_copies: parseInt(book.availableCopies || "0")
