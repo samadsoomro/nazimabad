@@ -18,103 +18,110 @@ const app = express();
 app.use(express.json({ limit: '1024mb' }));
 app.use(express.urlencoded({ extended: false, limit: '1024mb' }));
 
-const MemoryStore = (await import("memorystore")).default(session);
-
-app.use(
-  session({
-    cookie: { maxAge: 86400000 },
-    store: new MemoryStore({
-      checkPeriod: 86400000,
-    }),
-    resave: false,
-    saveUninitialized: false,
-    secret: process.env.SESSION_SECRET || "gcmn-library-secret-2024",
-  })
-);
-
-app.use((req, res, next) => {
-  const start = Date.now();
-  const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
-
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
-
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
-
-      if (logLine.length > 80) {
-        logLine = logLine.slice(0, 79) + "…";
-      }
-
-      console.log(logLine);
-    }
-  });
-
-  next();
-});
+// Initialized inside the async block to handle potential ESM-related top-level await issues in some environments
+let serverInitialized = false;
 
 (async () => {
-  // Database initialization is handled by the pool connection in db.ts
-  // Register routes
-  registerRoutes(app);
+  try {
+    console.log("[SERVER] Starting initialization...");
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
+    const sessionModule = await import("express-session");
+    const sessionHandler = sessionModule.default;
+    const MemoryStoreConstructor = (await import("memorystore")).default(sessionHandler);
 
-    console.error(`[SERVER ERROR] ${status}: ${message}`, err);
-    res.status(status).json({ message });
-  });
+    app.use(
+      sessionHandler({
+        cookie: { maxAge: 86400000 },
+        store: new MemoryStoreConstructor({
+          checkPeriod: 86400000,
+        }),
+        resave: false,
+        saveUninitialized: false,
+        secret: process.env.SESSION_SECRET || "gcmn-library-secret-2024",
+      })
+    );
 
-  const server = createServer(app);
-  server.timeout = 600000;
-  server.keepAliveTimeout = 65000;
-  server.headersTimeout = 66000;
+    app.use((req, res, next) => {
+      const start = Date.now();
+      const path = req.path;
+      let capturedJsonResponse: Record<string, any> | undefined = undefined;
 
-  // Serve static files from the uploads directory
-  const uploadDir = path.join(process.cwd(), "server", "uploads");
-  app.use("/server/uploads", express.static(uploadDir));
+      const originalResJson = res.json;
+      res.json = function (bodyJson, ...args) {
+        capturedJsonResponse = bodyJson;
+        return originalResJson.apply(res, [bodyJson, ...args]);
+      };
 
-  if (app.get("env") === "development") {
-    // Dynamic import to avoid bundling vite in production
-    // Obfuscate path to prevent bundler from tracing it
-    const vitePath = "./vi" + "te";
-    const { setupVite } = await import(vitePath);
-    await setupVite(app, server);
-  } else {
-    // Standard static file serving for production
-    const distPath = path.resolve(process.cwd(), "dist"); // Vercel build output usually goes to 'dist'
+      res.on("finish", () => {
+        const duration = Date.now() - start;
+        if (path.startsWith("/api")) {
+          let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
+          if (capturedJsonResponse) {
+            logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
+          }
 
-    // Check if dist exists, but don't crash if not (Vercel might handle it differently)
-    if (fs.existsSync(distPath)) {
-      app.use(express.static(distPath));
-      app.use("*", (_req, res) => {
-        res.sendFile(path.resolve(distPath, "index.html"));
+          if (logLine.length > 80) {
+            logLine = logLine.slice(0, 79) + "…";
+          }
+
+          console.log(logLine);
+        }
+      });
+
+      next();
+    });
+
+    console.log("[SERVER] Registering routes...");
+    registerRoutes(app);
+
+    app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+      const status = err.status || err.statusCode || 500;
+      const message = err.message || "Internal Server Error";
+      console.error(`[SERVER ERROR] ${status}: ${message}`, err);
+      res.status(status).json({ message });
+    });
+
+    const server = createServer(app);
+    server.timeout = 600000;
+    server.keepAliveTimeout = 65000;
+    server.headersTimeout = 66000;
+
+    const uploadDir = path.join(process.cwd(), "server", "uploads");
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    app.use("/server/uploads", express.static(uploadDir));
+
+    if (app.get("env") === "development") {
+      const vitePath = "./vi" + "te";
+      const { setupVite } = await import(vitePath);
+      await setupVite(app, server);
+    } else {
+      const distPath = path.resolve(process.cwd(), "dist");
+      if (fs.existsSync(distPath)) {
+        app.use(express.static(distPath));
+        app.use("*", (_req, res) => {
+          res.sendFile(path.resolve(distPath, "index.html"));
+        });
+      }
+    }
+
+    if (!process.env.VERCEL) {
+      const port = 5000;
+      server.listen({ port, host: "0.0.0.0" }, () => {
+        console.log(`[SERVER] Serving on port ${port}`);
       });
     }
-  }
 
-  if (!process.env.VERCEL) {
-    const port = 5000;
-    server.listen(
-      {
-        port,
-        host: "0.0.0.0",
-      },
-      () => {
-        console.log(`serving on port ${port}`);
-      }
-    );
+    serverInitialized = true;
+    console.log("[SERVER] Initialization complete.");
+  } catch (error) {
+    console.error("[SERVER] FATAL INITIALIZATION ERROR:", error);
+    // Don't throw, let Vercel handle the request (though it will likely 404 or fail later)
+    // Actually, throwing might be better so Vercel logs the crash clearly
+    throw error;
   }
 })();
 
+// Re-export app for Vercel
 export { app };
