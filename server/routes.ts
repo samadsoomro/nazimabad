@@ -95,13 +95,16 @@ export function registerRoutes(app: Express): void {
       const hashedPassword = await bcrypt.hash(password, 10);
       const user = await storage.createUser({
         email,
-        password: hashedPassword,
+        password: hashedPassword
+      });
+
+      await storage.createProfile({
+        userId: user.id,
         fullName,
         phone,
         rollNumber,
         department,
-        studentClass,
-        type: studentClass ? "student" : "user"
+        studentClass
       });
 
       await storage.createUserRole({ userId: user.id, role: "user" });
@@ -481,16 +484,12 @@ export function registerRoutes(app: Express): void {
         borrowerName,
         borrowerPhone,
         borrowerEmail,
-        libraryCardId,
-        borrowDate: borrowDate.toISOString(),
-        dueDate: dueDate.toISOString(),
-        status: "borrowed"
+        dueDate: dueDate.toISOString()
       });
 
       // Update available copies
       await storage.updateBook(bookId, {
-        availableCopies: Math.max(0, parseInt(book.availableCopies || "0") - 1).toString(),
-        updatedAt: new Date().toISOString()
+        availableCopies: Math.max(0, parseInt(book.availableCopies || "0") - 1).toString()
       });
 
       res.json(borrow);
@@ -514,8 +513,7 @@ export function registerRoutes(app: Express): void {
         const currentAvailable = parseInt(book.availableCopies || "0");
         const total = parseInt(book.totalCopies || "0");
         await storage.updateBook(borrow.bookId, {
-          availableCopies: Math.min(total, currentAvailable + 1).toString(),
-          updatedAt: new Date().toISOString()
+          availableCopies: Math.min(total, currentAvailable + 1).toString()
         });
       }
 
@@ -613,8 +611,7 @@ export function registerRoutes(app: Express): void {
         addressCity,
         addressState,
         addressZip,
-        password: applicationPassword ? await bcrypt.hash(applicationPassword, 10) : null,
-        status: "pending"
+        password: applicationPassword ? await bcrypt.hash(applicationPassword, 10) : null
       });
       res.json(application);
     } catch (error: any) {
@@ -675,8 +672,7 @@ export function registerRoutes(app: Express): void {
         method,
         name: name || null,
         email: email || null,
-        message: message || null,
-        status: "received"
+        message: message || null
       });
       res.json(donation);
     } catch (error: any) {
@@ -925,8 +921,7 @@ export function registerRoutes(app: Express): void {
         description,
         bookImage,
         totalCopies: copies,
-        availableCopies: copies,
-        updatedAt: new Date().toISOString()
+        availableCopies: copies
       });
       res.json(book);
     } catch (error: any) {
@@ -937,7 +932,7 @@ export function registerRoutes(app: Express): void {
   app.patch("/api/admin/books/:id", requireAdmin, upload.single('bookImage'), async (req: MulterRequest, res) => {
     try {
       const { bookName, shortIntro, description, totalCopies } = req.body;
-      const updateData: any = { updatedAt: new Date().toISOString() };
+      const updateData: any = {};
 
       if (bookName) updateData.bookName = bookName;
       if (shortIntro) updateData.shortIntro = shortIntro;
@@ -979,8 +974,7 @@ export function registerRoutes(app: Express): void {
         description,
         bookImage,
         totalCopies: copies,
-        availableCopies: copies,
-        updatedAt: new Date().toISOString()
+        availableCopies: copies
       });
       res.json(book);
     } catch (error: any) {
@@ -995,7 +989,6 @@ export function registerRoutes(app: Express): void {
       if (!existing) return res.status(404).json({ error: "Book not found" });
 
       const updateData: any = {
-        updatedAt: new Date().toISOString()
       };
       if (bookName) updateData.bookName = bookName;
       if (shortIntro) updateData.shortIntro = shortIntro;
@@ -1023,7 +1016,7 @@ export function registerRoutes(app: Express): void {
   app.patch("/api/admin/books/:id", requireAdmin, upload.single('bookImage'), async (req: MulterRequest, res) => {
     try {
       const { bookName, shortIntro, description, totalCopies } = req.body;
-      const updateData: any = { updatedAt: new Date().toISOString() };
+      const updateData: any = {};
 
       if (bookName) updateData.bookName = bookName;
       if (shortIntro) updateData.shortIntro = shortIntro;
