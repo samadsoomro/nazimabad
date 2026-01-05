@@ -116,7 +116,15 @@ export const books = pgTable("books", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
-export const insertBookSchema = createInsertSchema(books).omit({ id: true, createdAt: true, updatedAt: true });
+
+export const insertBookSchema = z.object({
+  bookName: z.string(),
+  shortIntro: z.string(),
+  description: z.string(),
+  bookImage: z.string().optional().nullable(),
+  totalCopies: z.any().optional(),
+  availableCopies: z.any().optional(),
+});
 export type InsertBook = z.infer<typeof insertBookSchema>;
 export type Book = typeof books.$inferSelect;
 
@@ -138,17 +146,94 @@ export const rareBooks = pgTable("rare_books", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
-export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true });
-export const insertProfileSchema = createInsertSchema(profiles).omit({ id: true, createdAt: true, updatedAt: true });
-export const insertContactMessageSchema = createInsertSchema(contactMessages).omit({ id: true, createdAt: true, isSeen: true });
-export const insertBookBorrowSchema = createInsertSchema(bookBorrows).omit({ id: true, createdAt: true, borrowDate: true, returnDate: true, status: true });
-export const insertLibraryCardApplicationSchema = createInsertSchema(libraryCardApplications).omit({ id: true, createdAt: true, updatedAt: true, status: true, cardNumber: true, studentId: true, issueDate: true, validThrough: true });
-export const insertDonationSchema = createInsertSchema(donations).omit({ id: true, createdAt: true });
-export const insertStudentSchema = createInsertSchema(students).omit({ id: true, createdAt: true });
-export const insertNonStudentSchema = createInsertSchema(nonStudents).omit({ id: true, createdAt: true });
-export const insertUserRoleSchema = createInsertSchema(userRoles).omit({ id: true, createdAt: true });
-export const insertBookDetailSchema = createInsertSchema(books).omit({ id: true, createdAt: true, updatedAt: true });
-export const insertRareBookSchema = createInsertSchema(rareBooks).omit({ id: true, createdAt: true });
+export const insertUserSchema = z.object({
+  email: z.string().email(),
+  password: z.string(),
+});
+
+export const insertProfileSchema = z.object({
+  userId: z.string().uuid(),
+  fullName: z.string(),
+  phone: z.string().optional().nullable(),
+  rollNumber: z.string().optional().nullable(),
+  department: z.string().optional().nullable(),
+  studentClass: z.string().optional().nullable(),
+});
+
+export const insertContactMessageSchema = z.object({
+  name: z.string(),
+  email: z.string().email(),
+  subject: z.string(),
+  message: z.string(),
+});
+
+export const insertBookBorrowSchema = z.object({
+  userId: z.string().uuid(),
+  bookId: z.string(),
+  bookTitle: z.string(),
+  borrowerName: z.string(),
+  borrowerPhone: z.string().optional().nullable(),
+  borrowerEmail: z.string().optional().nullable(),
+  dueDate: z.any(), // date string or Date object
+});
+
+export const insertLibraryCardApplicationSchema = z.object({
+  userId: z.string().uuid().optional().nullable(),
+  firstName: z.string(),
+  lastName: z.string(),
+  fatherName: z.string().optional().nullable(),
+  dob: z.string().optional().nullable(), // date string
+  class: z.string(),
+  field: z.string().optional().nullable(),
+  rollNo: z.string(),
+  email: z.string().email(),
+  phone: z.string(),
+  addressStreet: z.string(),
+  addressCity: z.string(),
+  addressState: z.string(),
+  addressZip: z.string(),
+  password: z.string().optional().nullable(),
+});
+
+export const insertDonationSchema = z.object({
+  amount: z.any(),
+  method: z.string(),
+  name: z.string().optional().nullable(),
+  email: z.string().optional().nullable(),
+  message: z.string().optional().nullable(),
+});
+
+export const insertStudentSchema = z.object({
+  userId: z.string().uuid(),
+  cardId: z.string(),
+  name: z.string(),
+  class: z.string().optional().nullable(),
+  field: z.string().optional().nullable(),
+  rollNo: z.string().optional().nullable(),
+});
+
+export const insertNonStudentSchema = z.object({
+  userId: z.string().uuid(),
+  name: z.string(),
+  role: z.string(),
+  phone: z.string().optional().nullable(),
+});
+
+export const insertUserRoleSchema = z.object({
+  userId: z.string().uuid(),
+  role: z.enum(["admin", "moderator", "user"]).default("user"),
+});
+
+export const insertBookDetailSchema = insertBookSchema;
+
+export const insertRareBookSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  category: z.string().optional().default("General"),
+  pdfPath: z.string(),
+  coverImage: z.string(),
+  status: z.string().optional().default("active"),
+});
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type InsertProfile = z.infer<typeof insertProfileSchema>;
@@ -173,6 +258,7 @@ export type Student = typeof students.$inferSelect;
 export type NonStudent = typeof nonStudents.$inferSelect;
 export type UserRole = typeof userRoles.$inferSelect;
 export type BookDetail = typeof books.$inferSelect;
+
 export const events = pgTable("events", {
   id: uuid("id").defaultRandom().primaryKey(),
   title: text("title").notNull(),
@@ -183,7 +269,13 @@ export const events = pgTable("events", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
-export const insertEventSchema = createInsertSchema(events).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertEventSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  images: z.array(z.string()).optional().nullable(),
+  date: z.string().optional().nullable(),
+});
+
 export type InsertEvent = z.infer<typeof insertEventSchema>;
 export type Event = typeof events.$inferSelect;
 
@@ -196,7 +288,13 @@ export const notifications = pgTable("notifications", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
-export const insertNotificationSchema = createInsertSchema(notifications).omit({ id: true, createdAt: true });
+export const insertNotificationSchema = z.object({
+  title: z.string().optional().nullable(),
+  message: z.string().optional().nullable(),
+  image: z.string().optional().nullable(),
+  type: z.string(),
+});
+
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;
 export type Notification = typeof notifications.$inferSelect;
 
@@ -211,6 +309,14 @@ export const notes = pgTable("notes", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
-export const insertNoteSchema = createInsertSchema(notes).omit({ id: true, createdAt: true });
+export const insertNoteSchema = z.object({
+  class: z.string(),
+  subject: z.string(),
+  title: z.string(),
+  description: z.string(),
+  pdfPath: z.string(),
+  status: z.string().default("active"),
+});
+
 export type InsertNote = z.infer<typeof insertNoteSchema>;
 export type Note = typeof notes.$inferSelect;
